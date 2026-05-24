@@ -1,0 +1,8 @@
+# Web klasöründeki HTML, CSS ve JavaScript dosyalarını dil istatistiklerinden muaf tut
+text/javascript linguist-vendored
+*.html linguist-vendored
+*.css linguist-vendored
+*.js linguist-vendored
+
+# Projenin ana dilinin Dart olduğunu netleştir
+*.dart linguist-language=Dart
