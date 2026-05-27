@@ -65,11 +65,12 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => MoodScreen(
-          userName: name,
-          isDarkMode: widget.isDarkMode,
-          onThemeChanged: widget.onThemeChanged,
-        ),
+        builder: (context) =>
+            MoodScreen(
+              userName: name,
+              isDarkMode: widget.isDarkMode,
+              onThemeChanged: widget.onThemeChanged,
+            ),
       ),
     );
   }
@@ -102,17 +103,23 @@ class _LoginScreenState extends State<LoginScreen> {
                   Center(
                     child: Column(
                       children: [
-                        const Icon(Icons.waving_hand_rounded, size: 72, color: Color(0xFF6C63FF)),
+                        const Icon(
+                            Icons.waving_hand_rounded, size: 72, color: Color(
+                            0xFF6C63FF)),
                         const SizedBox(height: 24),
                         const Text(
                           "Merhaba!",
-                          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+                          style: TextStyle(fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
                         ),
                         const SizedBox(height: 12),
                         Text(
                           "SmartTask Pro'ya başlamak için adınızı girin",
-                          style: TextStyle(color: Colors.grey.shade400, fontSize: 16),
-                          textAlign: TextAlign.center, // 🎯 DÜZELTİLDİ: TextAlign.center yapıldı
+                          style: TextStyle(color: Colors.grey.shade400,
+                              fontSize: 16),
+                          textAlign: TextAlign
+                              .center, // 🎯 DÜZELTİLDİ: TextAlign.center yapıldı
                         ),
                       ],
                     ),
@@ -126,14 +133,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         labelText: "Adınız",
                         labelStyle: const TextStyle(color: Colors.grey),
-                        prefixIcon: const Icon(Icons.person_outline_rounded, color: Colors.grey),
+                        prefixIcon: const Icon(
+                            Icons.person_outline_rounded, color: Colors.grey),
                         filled: true,
                         fillColor: const Color(0xFF1E294B),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 2)),
+                        border: OutlineInputBorder(borderRadius: BorderRadius
+                            .circular(16), borderSide: BorderSide.none),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                                color: Color(0xFF6C63FF), width: 2)),
                       ),
                       validator: (value) {
-                        if (value == null || value.trim().isEmpty) return 'Lütfen adınızı girin';
+                        if (value == null || value
+                            .trim()
+                            .isEmpty) return 'Lütfen adınızı girin';
                         return null;
                       },
                     ),
@@ -145,18 +159,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       backgroundColor: const Color(0xFF6C63FF),
                       foregroundColor: Colors.white,
                       minimumSize: const Size(double.infinity, 56),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
                     ),
                     child: _isLoading
-                        ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white))
-                        : const Text("Devam Et", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        ? const SizedBox(height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(color: Colors.white))
+                        : const Text("Devam Et", style: TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                   const SizedBox(height: 32),
                   TextButton(
                     onPressed: _isLoading ? null : _handleGuestLogin,
                     child: const Text(
                       "Misafir olarak devam et",
-                      style: TextStyle(color: Color(0xFF6C63FF), fontWeight: FontWeight.bold, fontSize: 15),
+                      style: TextStyle(color: Color(0xFF6C63FF),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15),
                     ),
                   ),
                 ],

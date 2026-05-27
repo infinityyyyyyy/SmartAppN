@@ -61,7 +61,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // GÖREV EKLEME / DÜZENLEME MODAL PENCERESİ
   void _showTaskDialog({TodoTask? task}) {
     final nameController = TextEditingController(text: task?.title ?? '');
-    final categoryController = TextEditingController(text: task?.category ?? '');
+    final categoryController = TextEditingController(
+      text: task?.category ?? '',
+    );
     String selectedPriority = task?.priority ?? 'Düşük';
 
     showModalBottomSheet(
@@ -88,7 +90,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     Text(
                       task == null ? "Yeni Görev Ekle" : "Görevi Düzenle",
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
@@ -99,7 +105,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         labelStyle: const TextStyle(color: Colors.grey),
                         filled: true,
                         fillColor: const Color(0xFF0D111E),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -111,11 +120,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         labelStyle: const TextStyle(color: Colors.grey),
                         filled: true,
                         fillColor: const Color(0xFF0D111E),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text("Önem Derecesi:", style: TextStyle(color: Colors.white, fontSize: 14)),
+                    const Text(
+                      "Önem Derecesi:",
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
                     const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -126,7 +141,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           selected: isSel,
                           selectedColor: const Color(0xFF6C63FF),
                           backgroundColor: const Color(0xFF0D111E),
-                          labelStyle: TextStyle(color: isSel ? Colors.white : Colors.grey),
+                          labelStyle: TextStyle(
+                            color: isSel ? Colors.white : Colors.grey,
+                          ),
                           onSelected: (val) {
                             if (val) setModalState(() => selectedPriority = p);
                           },
@@ -141,16 +158,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         setState(() {
                           if (task == null) {
                             // Yeni ekleme
-                            _tasks.add(TodoTask(
-                              id: DateTime.now().toString(),
-                              title: nameController.text.trim(),
-                              category: categoryController.text.trim().isEmpty ? 'Genel' : categoryController.text.trim(),
-                              priority: selectedPriority,
-                            ));
+                            _tasks.add(
+                              TodoTask(
+                                id: DateTime.now().toString(),
+                                title: nameController.text.trim(),
+                                category: categoryController.text.trim().isEmpty
+                                    ? 'Genel'
+                                    : categoryController.text.trim(),
+                                priority: selectedPriority,
+                              ),
+                            );
                           } else {
                             // Düzenleme
                             task.title = nameController.text.trim();
-                            task.category = categoryController.text.trim().isEmpty ? 'Genel' : categoryController.text.trim();
+                            task.category =
+                                categoryController.text.trim().isEmpty
+                                ? 'Genel'
+                                : categoryController.text.trim();
                             task.priority = selectedPriority;
                           }
                         });
@@ -160,7 +184,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         backgroundColor: const Color(0xFF6C63FF),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       child: Text(task == null ? "Ekle" : "Güncelle"),
                     ),
@@ -185,7 +211,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showTaskDialog(),
         backgroundColor: const Color(0xFF6C63FF),
-        child: const Icon(Icons.star_rounded, color: Colors.amber, size: 32), // Yıldız butonu
+        child: const Icon(
+          Icons.star_rounded,
+          color: Colors.amber,
+          size: 32,
+        ), // Yıldız butonu
       ),
       body: Container(
         width: double.infinity,
@@ -209,20 +239,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     Text(
                       "Merhaba, ${widget.userEmail} 👋",
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      _tasks.isEmpty ? "Bugün için henüz görev yok." : "İşte bugünün hedefleri:",
-                      style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                      _tasks.isEmpty
+                          ? "Bugün için henüz görev yok."
+                          : "İşte bugünün hedefleri:",
+                      style: TextStyle(
+                        color: Colors.grey.shade400,
+                        fontSize: 14,
+                      ),
                     ),
                     const SizedBox(height: 20),
                     // İlerleme Durumu Metni
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text("Günlük İlerleme", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
-                        Text("${(progress * 100).toInt()}%", style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold)),
+                        const Text(
+                          "Günlük İlerleme",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          "${(progress * 100).toInt()}%",
+                          style: const TextStyle(
+                            color: Colors.amber,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -233,7 +284,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         value: progress,
                         minHeight: 10,
                         backgroundColor: Colors.white.withOpacity(0.1),
-                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF6C63FF)),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          Color(0xFF6C63FF),
+                        ),
                       ),
                     ),
                   ],
@@ -245,13 +298,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: _tasks.isEmpty
                     ? _buildEmptyStateWidget()
                     : ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  itemCount: _tasks.length,
-                  itemBuilder: (context, index) {
-                    final task = _tasks[index];
-                    return _buildTaskCard(task);
-                  },
-                ),
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        itemCount: _tasks.length,
+                        itemBuilder: (context, index) {
+                          final task = _tasks[index];
+                          return _buildTaskCard(task);
+                        },
+                      ),
               ),
             ],
           ),
@@ -266,11 +319,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.auto_awesome_motion_rounded, size: 64, color: Colors.white.withOpacity(0.2)),
+          Icon(
+            Icons.auto_awesome_motion_rounded,
+            size: 64,
+            color: Colors.white.withOpacity(0.2),
+          ),
           const SizedBox(height: 16),
           Text(
             "Liste bomboş duruyor...\nSol alttaki yıldızdan yeni görev ekle!",
-            style: TextStyle(color: Colors.grey.shade500, fontSize: 15, height: 1.4),
+            style: TextStyle(
+              color: Colors.grey.shade500,
+              fontSize: 15,
+              height: 1.4,
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -284,10 +345,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       duration: const Duration(milliseconds: 300),
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: task.isCompleted ? const Color(0xFF161E38) : const Color(0xFF1E294B),
+        color: task.isCompleted
+            ? const Color(0xFF161E38)
+            : const Color(0xFF1E294B),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: task.isCompleted ? Colors.transparent : Colors.white.withOpacity(0.05),
+          color: task.isCompleted
+              ? Colors.transparent
+              : Colors.white.withOpacity(0.05),
         ),
       ),
       child: ListTile(
@@ -302,8 +367,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 400),
             child: task.isCompleted
-                ? const Icon(Icons.star_rounded, color: Colors.amber, size: 30, key: ValueKey("checked"))
-                : Icon(Icons.star_border_rounded, color: Colors.grey.shade400, size: 30, key: const ValueKey("unchecked")),
+                ? const Icon(
+                    Icons.star_rounded,
+                    color: Colors.amber,
+                    size: 30,
+                    key: ValueKey("checked"),
+                  )
+                : Icon(
+                    Icons.star_border_rounded,
+                    color: Colors.grey.shade400,
+                    size: 30,
+                    key: const ValueKey("unchecked"),
+                  ),
           ),
         ),
         title: Text(
@@ -322,8 +397,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
               // Kategori Rozeti
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(6)),
-                child: Text(task.category, style: const TextStyle(color: Colors.grey, fontSize: 11)),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  task.category,
+                  style: const TextStyle(color: Colors.grey, fontSize: 11),
+                ),
               ),
               const SizedBox(width: 8),
               // Önem Derecesi Göstergesi
@@ -335,7 +416,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 child: Text(
                   task.priority,
-                  style: TextStyle(color: _getPriorityColor(task.priority), fontSize: 11, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: _getPriorityColor(task.priority),
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -346,11 +431,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(Icons.edit_rounded, color: Colors.blueAccent, size: 20),
+              icon: const Icon(
+                Icons.edit_rounded,
+                color: Colors.blueAccent,
+                size: 20,
+              ),
               onPressed: () => _showTaskDialog(task: task),
             ),
             IconButton(
-              icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
+              icon: const Icon(
+                Icons.delete_outline_rounded,
+                color: Colors.redAccent,
+                size: 20,
+              ),
               onPressed: () {
                 setState(() {
                   _tasks.removeWhere((t) => t.id == task.id);

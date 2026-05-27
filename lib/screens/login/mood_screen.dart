@@ -1,6 +1,8 @@
 // lib/screens/login/mood_screen.dart
 import 'dart:math';
+
 import 'package:flutter/material.dart';
+
 import '../dashboard/dashboard_screen.dart';
 
 class MoodScreen extends StatefulWidget {
@@ -36,7 +38,7 @@ class _MoodScreenState extends State<MoodScreen> {
       "Modun zirvedeyken en zorlu görevleri aradan çıkarmanın tam sırası!",
       "Harika bir gün, harika kararlarla taçlanır. Adım at!",
       "Bugün senin günün! Potansiyelini sonuna kadar yansıt!",
-      "Bu harika enerjinle bugün harikalar yaratacaksın, inanıyorum!"
+      "Bu harika enerjinle bugün harikalar yaratacaksın, inanıyorum!",
     ],
     "İyiyim.": [
       "Harika bir denge! Dingin ve odaklanmış bir gün seni bekliyor. 🎯",
@@ -48,7 +50,7 @@ class _MoodScreenState extends State<MoodScreen> {
       "Bugün her şey yolunda. Odaklan ve hedeflerine doğru ilerle.",
       "Dengeli bir enerji, uzun soluklu başarıların en büyük sırrıdır.",
       "Kendinden emin ve hazırsın. Bugün güzel adımlar atacaksın.",
-      "Planlarını gerçekleştirmek için bugünkü modun tam aradığın şey!"
+      "Planlarını gerçekleştirmek için bugünkü modun tam aradığın şey!",
     ],
     "Eh...": [
       "Bazen sadece başlamak bile modu yükseltir. Küçük bir adımla başla! 🚶‍♂️",
@@ -60,7 +62,7 @@ class _MoodScreenState extends State<MoodScreen> {
       "Bugün planın %50'sini yapsan bile bu bir zaferdir. Kendine şans ver.",
       "Zihnini rahat bırak. Sadece önündeki ilk küçük adıma odaklan.",
       "Modun yavaş yavaş yükselecektir, acele etme ve sadece başla.",
-      "Bugün büyük kararlar almak yerine, rutin işlerini tamamlamayı dene."
+      "Bugün büyük kararlar almak yerine, rutin işlerini tamamlamayı dene.",
     ],
     "Keyifsiz.": [
       "Keyifsiz anlar kalıcı değildir. Bugün kendine karşı nazik ol. ☕",
@@ -72,7 +74,7 @@ class _MoodScreenState extends State<MoodScreen> {
       "Her gün harika geçmek zorunda değil. Bugünü sakin atlatmak da bir başarı.",
       "İçindeki enerjiyi toplamak için acele etme, yavaşlamak bazen en iyisidir.",
       "Biraz temiz hava al veya bir bardak su iç. Küçük şeyler modu değiştirir.",
-      "Bu modu üretkenliğe dönüştürmek zorunda değilsin, bugün sakin kalmak yeterli."
+      "Bu modu üretkenliğe dönüştürmek zorunda değilsin, bugün sakin kalmak yeterli.",
     ],
     "Zor bir gün.": [
       "Fırtınalar ağaçları daha güçlü kılar. Bu zor günün de geçeceğini bil! 🛡️",
@@ -84,8 +86,8 @@ class _MoodScreenState extends State<MoodScreen> {
       "Yalnız değilsin, bu zorlu anı sadece parça parça yönetmeye odaklan.",
       "Şu an zor görünebilir ama arkandaki tüm engelleri nasıl aştığını hatırla.",
       "Bugün en düşük viteste ilerle. Kendini hırpalamadan günü tamamla.",
-      "Bu zorlu günün akşamında kendine güzel bir ödül vermeyi unutma."
-    ]
+      "Bu zorlu günün akşamında kendine güzel bir ödül vermeyi unutma.",
+    ],
   };
 
   @override
@@ -128,7 +130,9 @@ class _MoodScreenState extends State<MoodScreen> {
             duration: const Duration(milliseconds: 600),
             child: _showWelcome
                 ? _buildWelcomeWidget()
-                : (_selectedQuote.isEmpty ? _buildMoodSelectionWidget() : _buildQuoteWidget()),
+                : (_selectedQuote.isEmpty
+                      ? _buildMoodSelectionWidget()
+                      : _buildQuoteWidget()),
           ),
         ),
       ),
@@ -150,23 +154,31 @@ class _MoodScreenState extends State<MoodScreen> {
                 color: Colors.white.withOpacity(0.05),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.auto_awesome_rounded, color: Colors.amber, size: 80),
+              child: const Icon(
+                Icons.auto_awesome_rounded,
+                color: Colors.amber,
+                size: 80,
+              ),
             ),
             const SizedBox(height: 32),
             const Text(
               "Hoş Geldiniz",
               style: TextStyle(
-                  fontFamily: 'Serif',
-                  fontSize: 44,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  letterSpacing: 1.2
+                fontFamily: 'Serif',
+                fontSize: 44,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                letterSpacing: 1.2,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               widget.userName,
-              style: const TextStyle(fontSize: 26, color: Color(0xFF6C63FF), fontWeight: FontWeight.w500),
+              style: const TextStyle(
+                fontSize: 26,
+                color: Color(0xFF6C63FF),
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),
@@ -185,7 +197,12 @@ class _MoodScreenState extends State<MoodScreen> {
           children: [
             const Text(
               "Bugün kendini\nnasıl hissediyorsun?",
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white, height: 1.3),
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                height: 1.3,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 48),
@@ -224,7 +241,11 @@ class _MoodScreenState extends State<MoodScreen> {
               ),
               child: Text(
                 title,
-                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),
@@ -243,14 +264,27 @@ class _MoodScreenState extends State<MoodScreen> {
         children: [
           Text(
             _selectedMoodTitle,
-            style: const TextStyle(fontSize: 22, color: Color(0xFF6C63FF), fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 22,
+              color: Color(0xFF6C63FF),
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 24),
-          Icon(Icons.format_quote_rounded, size: 48, color: Colors.white.withOpacity(0.3)),
+          Icon(
+            Icons.format_quote_rounded,
+            size: 48,
+            color: Colors.white.withOpacity(0.3),
+          ),
           const SizedBox(height: 16),
           Text(
             _selectedQuote,
-            style: const TextStyle(fontSize: 22, color: Colors.white, height: 1.5, fontStyle: FontStyle.italic),
+            style: const TextStyle(
+              fontSize: 22,
+              color: Colors.white,
+              height: 1.5,
+              fontStyle: FontStyle.italic,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 48),
@@ -272,10 +306,15 @@ class _MoodScreenState extends State<MoodScreen> {
               backgroundColor: const Color(0xFF6C63FF),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
             icon: const Icon(Icons.arrow_forward_rounded),
-            label: const Text("Uygulamaya Geç", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            label: const Text(
+              "Uygulamaya Geç",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
