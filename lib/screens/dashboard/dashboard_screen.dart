@@ -1,6 +1,7 @@
 // lib/screens/dashboard/dashboard_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart'; // Grafikler için kütüphaneyi ekledik
 
 // Görev Modelimiz
 class TodoTask {
@@ -157,7 +158,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                         setState(() {
                           if (task == null) {
-                            // Yeni ekleme
                             _tasks.add(
                               TodoTask(
                                 id: DateTime.now().toString(),
@@ -169,10 +169,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                             );
                           } else {
-                            // Düzenleme
                             task.title = nameController.text.trim();
                             task.category =
-                                categoryController.text.trim().isEmpty
+                            categoryController.text.trim().isEmpty
                                 ? 'Genel'
                                 : categoryController.text.trim();
                             task.priority = selectedPriority;
@@ -205,8 +204,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     double progress = _calculateProgress();
 
+    // Grafik için dinamik sayıları hesaplıyoruz
+    int completedCount = _tasks.where((task) => task.isCompleted).length;
+    int pendingCount = _tasks.length - completedCount;
+
     return Scaffold(
-      // Sol altta Yıldız şeklinde Ekleme Butonu
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showTaskDialog(),
@@ -215,7 +217,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Icons.star_rounded,
           color: Colors.amber,
           size: 32,
-        ), // Yıldız butonu
+        ),
       ),
       body: Container(
         width: double.infinity,
@@ -256,7 +258,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // İlerleme Durumu Metni
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -277,13 +278,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    // Çizgisel İlerleme Çubuğu (Progress Bar)
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: LinearProgressIndicator(
                         value: progress,
                         minHeight: 10,
-                        backgroundColor: Colors.white.withOpacity(0.1),
+                        backgroundColor: Colors.white.withValues(alpha: 0.1), // withOpacity uyarısını da çözdük!
                         valueColor: const AlwaysStoppedAnimation<Color>(
                           Color(0xFF6C63FF),
                         ),
@@ -293,18 +293,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ),
 
+              // 📈 YENİ EKLENEN ALAN: Dinamik Grafik Bölümü
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                child: EfficiencyChartWidget(
+                  completedTasksCount: completedCount,
+                  pendingTasksCount: pendingCount,
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
               // GÖREV LİSTESİ ALANI
               Expanded(
                 child: _tasks.isEmpty
                     ? _buildEmptyStateWidget()
                     : ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        itemCount: _tasks.length,
-                        itemBuilder: (context, index) {
-                          final task = _tasks[index];
-                          return _buildTaskCard(task);
-                        },
-                      ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  itemCount: _tasks.length,
+                  itemBuilder: (context, index) {
+                    final task = _tasks[index];
+                    return _buildTaskCard(task);
+                  },
+                ),
               ),
             ],
           ),
@@ -313,7 +324,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // Eğer hiç görev yoksa gösterilecek şık boş ekran tasarımı
   Widget _buildEmptyStateWidget() {
     return Center(
       child: Column(
@@ -322,7 +332,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Icon(
             Icons.auto_awesome_motion_rounded,
             size: 64,
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withValues(alpha: 0.2),
           ),
           const SizedBox(height: 16),
           Text(
@@ -339,7 +349,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // Listelenen Her Bir Görev Kartı Tasarımı
   Widget _buildTaskCard(TodoTask task) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -352,12 +361,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         border: Border.all(
           color: task.isCompleted
               ? Colors.transparent
-              : Colors.white.withOpacity(0.05),
+              : Colors.white.withValues(alpha: 0.05),
         ),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        // Basıldığında tamamlama efekti (Yıldız çakması)
         leading: GestureDetector(
           onTap: () {
             setState(() {
@@ -368,17 +376,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
             duration: const Duration(milliseconds: 400),
             child: task.isCompleted
                 ? const Icon(
-                    Icons.star_rounded,
-                    color: Colors.amber,
-                    size: 30,
-                    key: ValueKey("checked"),
-                  )
+              Icons.star_rounded,
+              color: Colors.amber,
+              size: 30,
+              key: ValueKey("checked"),
+            )
                 : Icon(
-                    Icons.star_border_rounded,
-                    color: Colors.grey.shade400,
-                    size: 30,
-                    key: const ValueKey("unchecked"),
-                  ),
+              Icons.star_border_rounded,
+              color: Colors.grey.shade400,
+              size: 30,
+              key: const ValueKey("unchecked"),
+            ),
           ),
         ),
         title: Text(
@@ -394,11 +402,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           padding: const EdgeInsets.only(top: 6.0),
           child: Row(
             children: [
-              // Kategori Rozeti
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: Colors.white.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
@@ -407,11 +414,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              // Önem Derecesi Göstergesi
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: _getPriorityColor(task.priority).withOpacity(0.15),
+                  color: _getPriorityColor(task.priority).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
@@ -426,7 +432,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ],
           ),
         ),
-        // Sağ taraftaki işlem butonları (Düzenle ve Sil)
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -453,6 +458,110 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+// 📊 PASTA GRAFİĞİ WIDGET'I (Aynı dosya içinde durabilir)
+class EfficiencyChartWidget extends StatelessWidget {
+  final int completedTasksCount;
+  final int pendingTasksCount;
+
+  const EfficiencyChartWidget({
+    super.key,
+    required this.completedTasksCount,
+    required this.pendingTasksCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    int total = completedTasksCount + pendingTasksCount;
+    bool hasData = total > 0;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E294B), // Kart rengine uyması için güncellendi
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+      ),
+      child: Column(
+        children: [
+          const Text(
+            "Günün Verimlilik Analizi",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 120,
+            child: hasData
+                ? PieChart(
+              PieChartData(
+                sectionsSpace: 4,
+                centerSpaceRadius: 30,
+                sections: [
+                  PieChartSectionData(
+                    color: Colors.greenAccent[400],
+                    value: completedTasksCount.toDouble(),
+                    title: '${((completedTasksCount / total) * 100).toStringAsFixed(0)}%',
+                    radius: 20,
+                    titleStyle: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  PieChartSectionData(
+                    color: Colors.orangeAccent,
+                    value: pendingTasksCount.toDouble(),
+                    title: '${((pendingTasksCount / total) * 100).toStringAsFixed(0)}%',
+                    radius: 20,
+                    titleStyle: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            )
+                : Center(
+              child: Text(
+                "Henüz planlanmış bir görev yok.",
+                style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+              ),
+            ),
+          ),
+          if (hasData) ...[
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildIndicator(Colors.greenAccent[400]!, "Tamamlandı ($completedTasksCount)"),
+                _buildIndicator(Colors.orangeAccent, "Bekleyen ($pendingTasksCount)"),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIndicator(Color color, String text) {
+    return Row(
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+        ),
+        const SizedBox(width: 6),
+        Text(text, style: TextStyle(color: Colors.grey.shade400, fontSize: 12)),
+      ],
     );
   }
 }
