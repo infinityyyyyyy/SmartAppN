@@ -1,8 +1,7 @@
 // lib/screens/login/mood_screen.dart
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart'; // 🌟 Hafıza paketi eklendi
 import '../dashboard/dashboard_screen.dart';
 
 class MoodScreen extends StatefulWidget {
@@ -26,7 +25,6 @@ class _MoodScreenState extends State<MoodScreen> {
   String _selectedQuote = "";
   String _selectedMoodTitle = "";
 
-  // Her emoji için tam 10 adet özel motivasyon sözü havuzu
   final Map<String, List<String>> _motivationQuotes = {
     "Şahane!": [
       "Harika! Bu enerjiyi bugün tamamlamak istediğin işlere yansıt! ✨",
@@ -43,7 +41,7 @@ class _MoodScreenState extends State<MoodScreen> {
     "İyiyim.": [
       "Harika bir denge! Dingin ve odaklanmış bir gün seni bekliyor. 🎯",
       "İyi olmak, harika işler başarmak için en güvenli zeminidir.",
-      "Net bir zihin ve istikrarlı bir enerji bugün seni başarıya taşır.",
+      "Net bir zihin ve istikrarlı bir energy bugün seni başarıya taşır.",
       "Güzel bir gün geçirmek için ihtiyacın olan her şey zaten içinde mevcut.",
       "Adım adım, sakin ve kararlı bir şekilde bugünün planlarını tamamlayabilirsin.",
       "İçindeki sakin güç, en karmaşık kodları bile çözmene yeter!",
@@ -93,7 +91,6 @@ class _MoodScreenState extends State<MoodScreen> {
   @override
   void initState() {
     super.initState();
-    // 2.5 saniye sonra Hoş Geldiniz yazısını kapatıp duygu ekranını açar
     Future.delayed(const Duration(milliseconds: 2500), () {
       if (mounted) {
         setState(() => _showWelcome = false);
@@ -101,7 +98,6 @@ class _MoodScreenState extends State<MoodScreen> {
     });
   }
 
-  // Rastgele söz seçen fonksiyon
   void _selectMood(String moodTitle) {
     final quotes = _motivationQuotes[moodTitle]!;
     final random = Random();
@@ -110,6 +106,13 @@ class _MoodScreenState extends State<MoodScreen> {
       _selectedMoodTitle = moodTitle;
       _selectedQuote = quotes[random.nextInt(quotes.length)];
     });
+  }
+
+  // 🌟 Kullanıcı uygulamaya geçerken bugünün tarihini mühürleyen fonksiyon
+  Future<void> _saveMoodSelectionDate() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String todayStr = DateTime.now().toString().split(' ')[0]; // YYYY-MM-DD formatı
+    await prefs.setString('last_mood_date', todayStr);
   }
 
   @override
@@ -131,15 +134,14 @@ class _MoodScreenState extends State<MoodScreen> {
             child: _showWelcome
                 ? _buildWelcomeWidget()
                 : (_selectedQuote.isEmpty
-                      ? _buildMoodSelectionWidget()
-                      : _buildQuoteWidget()),
+                ? _buildMoodSelectionWidget()
+                : _buildQuoteWidget()),
           ),
         ),
       ),
     );
   }
 
-  // 1. AŞAMA: Hoş Geldiniz Ekranı (3. görsel esintili)
   Widget _buildWelcomeWidget() {
     return Center(
       key: const ValueKey("welcome"),
@@ -151,7 +153,7 @@ class _MoodScreenState extends State<MoodScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white.withValues(alpha: 0.05), // withOpacity düzeltildi
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -186,7 +188,6 @@ class _MoodScreenState extends State<MoodScreen> {
     );
   }
 
-  // 2. AŞAMA: Bugün Nasıl Hissediyorsun Ekranı (4. görsel tasarımı)
   Widget _buildMoodSelectionWidget() {
     return Center(
       key: const ValueKey("mood_select"),
@@ -206,7 +207,6 @@ class _MoodScreenState extends State<MoodScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 48),
-            // Emojilerin Yatay Dizilimi
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -223,7 +223,6 @@ class _MoodScreenState extends State<MoodScreen> {
     );
   }
 
-  // Emojilerin altındaki eğik metinli özel buton yapısı
   Widget _buildEmojiButton(String emoji, String title) {
     return GestureDetector(
       onTap: () => _selectMood(title),
@@ -232,11 +231,11 @@ class _MoodScreenState extends State<MoodScreen> {
           Text(emoji, style: const TextStyle(fontSize: 40)),
           const SizedBox(height: 12),
           Transform.rotate(
-            angle: -0.2, // Görseldeki gibi hafif sola eğik yazı efekti
+            angle: -0.2,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1), // withOpacity düzeltildi
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -254,7 +253,6 @@ class _MoodScreenState extends State<MoodScreen> {
     );
   }
 
-  // 3. AŞAMA: Seçilen Emojiye Göre Söz Gösteren Ekran
   Widget _buildQuoteWidget() {
     return Padding(
       key: const ValueKey("quote"),
@@ -274,7 +272,7 @@ class _MoodScreenState extends State<MoodScreen> {
           Icon(
             Icons.format_quote_rounded,
             size: 48,
-            color: Colors.white.withOpacity(0.3),
+            color: Colors.white.withValues(alpha: 0.3), // withOpacity düzeltildi
           ),
           const SizedBox(height: 16),
           Text(
@@ -289,18 +287,23 @@ class _MoodScreenState extends State<MoodScreen> {
           ),
           const SizedBox(height: 48),
           ElevatedButton.icon(
-            onPressed: () {
-              // Dashboard ekranına geçiş yapıyoruz
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DashboardScreen(
-                    isDarkMode: widget.isDarkMode,
-                    onThemeChanged: widget.onThemeChanged,
-                    userEmail: widget.userName,
+            onPressed: () async {
+              // 🌟 Önce bugünün tarihini hafızaya mühürlüyoruz
+              await _saveMoodSelectionDate();
+
+              // Sonra Dashboard ekranına geçiş yapıyoruz
+              if (mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DashboardScreen(
+                      isDarkMode: widget.isDarkMode,
+                      onThemeChanged: widget.onThemeChanged,
+                      userEmail: widget.userName,
+                    ),
                   ),
-                ),
-              );
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF6C63FF),

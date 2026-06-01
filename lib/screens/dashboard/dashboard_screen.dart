@@ -1,7 +1,9 @@
 // lib/screens/dashboard/dashboard_screen.dart
 
+import 'dart:convert'; // 🌟 JSON dönüşümleri için eklendi
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart'; // Grafikler için kütüphaneyi ekledik
+import 'package:fl_chart/fl_chart.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // 🌟 Hafıza paketi eklendi
 
 // Görev Modelimiz
 class TodoTask {
@@ -18,12 +20,34 @@ class TodoTask {
     required this.priority,
     this.isCompleted = false,
   });
+
+  // 🌟 Telefona kaydetmek için Map yapısına çeviriyoruz
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'category': category,
+      'priority': priority,
+      'isCompleted': isCompleted,
+    };
+  }
+
+  // 🌟 Telefondan okurken tekrar TodoTask nesnesine çeviriyoruz
+  factory TodoTask.fromMap(Map<String, dynamic> map) {
+    return TodoTask(
+      id: map['id'],
+      title: map['title'],
+      category: map['category'],
+      priority: map['priority'],
+      isCompleted: map['isCompleted'] ?? false,
+    );
+  }
 }
 
 class DashboardScreen extends StatefulWidget {
   final bool isDarkMode;
   final ValueChanged<bool> onThemeChanged;
-  final String userEmail; // Aslında login'den gelen ismi tutuyor
+  final String userEmail;
 
   const DashboardScreen({
     super.key,
@@ -38,6 +62,34 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final List<TodoTask> _tasks = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTasksFromStorage(); // 🌟 Uygulama açılırken eski görevleri yükle
+  }
+
+  // 🌟 1. Görevleri kalıcı hafızadan yükleme fonksiyonu
+  Future<void> _loadTasksFromStorage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? tasksJson = prefs.getString('saved_tasks');
+
+    if (tasksJson != null) {
+      final List<dynamic> decodedList = jsonDecode(tasksJson);
+      setState(() {
+        _tasks.clear();
+        _tasks.addAll(decodedList.map((item) => TodoTask.fromMap(item)).toList());
+      });
+    }
+  }
+
+  // 🌟 2. Görevleri kalıcı hafızaya kaydetme fonksiyonu
+  Future<void> _saveTasksToStorage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<Map<String, dynamic>> taskMapList = _tasks.map((t) => t.toMap()).toList();
+    final String tasksJson = jsonEncode(taskMapList);
+    await prefs.setString('saved_tasks', tasksJson);
+  }
 
   // Önem derecelerine göre renk tanımları
   Color _getPriorityColor(String priority) {
@@ -177,6 +229,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             task.priority = selectedPriority;
                           }
                         });
+                        _saveTasksToStorage(); // 🌟 Değişiklikten sonra hafızaya kaydet
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
@@ -204,7 +257,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     double progress = _calculateProgress();
 
-    // Grafik için dinamik sayıları hesaplıyoruz
     int completedCount = _tasks.where((task) => task.isCompleted).length;
     int pendingCount = _tasks.length - completedCount;
 
@@ -233,7 +285,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // ÜST PANEL: Karşılama ve İlerleme Göstergesi
               Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
@@ -260,7 +311,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+                      children: [g,t
                         const Text(
                           "Günlük İlerleme",
                           style: TextStyle(
@@ -283,7 +334,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: LinearProgressIndicator(
                         value: progress,
                         minHeight: 10,
-                        backgroundColor: Colors.white.withValues(alpha: 0.1), // withOpacity uyarısını da çözdük!
+                        backgroundColor: Colors.white.withValues(alpha: 0.1),
                         valueColor: const AlwaysStoppedAnimation<Color>(
                           Color(0xFF6C63FF),
                         ),
@@ -293,7 +344,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ),
 
-              // 📈 YENİ EKLENEN ALAN: Dinamik Grafik Bölümü
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
                 child: EfficiencyChartWidget(
@@ -304,7 +354,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
               const SizedBox(height: 12),
 
-              // GÖREV LİSTESİ ALANI
               Expanded(
                 child: _tasks.isEmpty
                     ? _buildEmptyStateWidget()
@@ -371,6 +420,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             setState(() {
               task.isCompleted = !task.isCompleted;
             });
+            _saveTasksToStorage(); // 🌟 Tamamlama durumu değişince kaydet
           },
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 400),
@@ -453,6 +503,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 setState(() {
                   _tasks.removeWhere((t) => t.id == task.id);
                 });
+                _saveTasksToStorage(); // 🌟 Silme işleminden sonra kaydet
               },
             ),
           ],
@@ -462,7 +513,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 }
 
-// 📊 PASTA GRAFİĞİ WIDGET'I (Aynı dosya içinde durabilir)
 class EfficiencyChartWidget extends StatelessWidget {
   final int completedTasksCount;
   final int pendingTasksCount;
@@ -481,7 +531,7 @@ class EfficiencyChartWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E294B), // Kart rengine uyması için güncellendi
+        color: const Color(0xFF1E294B),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
@@ -542,7 +592,7 @@ class EfficiencyChartWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildIndicator(Colors.greenAccent[400]!, "Tamamlandı ($completedTasksCount)"),
-                _buildIndicator(Colors.orangeAccent, "Bekleyen ($pendingTasksCount)"),
+                _buildIndicator(Colors.orangeAccent, "Bekleyen ($pendingTasksCount)"), // 🌟 Burası pendingTasksCount olarak düzeltildi!
               ],
             ),
           ],
