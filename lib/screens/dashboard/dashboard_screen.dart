@@ -222,10 +222,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             );
                           } else {
                             task.title = nameController.text.trim();
-                            task.category =
-                            categoryController.text.trim().isEmpty
+                            task.category = categoryController.text.trim().isEmpty
                                 ? 'Genel'
-                                : categoryController.text.trim();
+                                : categoryController.text.trim(); // 🌟 Noktalı virgül buraya başarıyla eklendi!
                             task.priority = selectedPriority;
                           }
                         });
@@ -274,11 +273,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF1A2344), Color(0xFF0D111E)],
+            // 🌟 Eğer dark moddaysa eski renkler, değilse aydınlık soft renkler:
+            colors: widget.isDarkMode
+                ? [const Color(0xFF1A2344), const Color(0xFF0D111E)]
+                : [Colors.blueGrey.shade50, Colors.white],
           ),
         ),
         child: SafeArea(
@@ -290,13 +292,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Merhaba, ${widget.userEmail} 👋",
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    // 🌟 Üst Başlık ve Dark Mode Butonu Yan Yana Getirildi
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "Merhaba, ${widget.userEmail} 👋",
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            widget.isDarkMode ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+                            color: widget.isDarkMode ? Colors.amber : Colors.indigoAccent,
+                          ),
+                          onPressed: () {
+                            // 🌟 Ana ekrana temanın değiştiğini haber veriyoruz
+                            widget.onThemeChanged(!widget.isDarkMode);
+                          },
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -309,26 +330,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [g,t
-                        const Text(
-                          "Günlük İlerleme",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text(
-                          "${(progress * 100).toInt()}%",
-                          style: const TextStyle(
-                            color: Colors.amber,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: LinearProgressIndicator(
@@ -592,7 +593,7 @@ class EfficiencyChartWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildIndicator(Colors.greenAccent[400]!, "Tamamlandı ($completedTasksCount)"),
-                _buildIndicator(Colors.orangeAccent, "Bekleyen ($pendingTasksCount)"), // 🌟 Burası pendingTasksCount olarak düzeltildi!
+                _buildIndicator(Colors.orangeAccent, "Bekleyen ($pendingTasksCount)"),
               ],
             ),
           ],

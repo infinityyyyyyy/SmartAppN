@@ -1,7 +1,7 @@
 // lib/screens/login/mood_screen.dart
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // 🌟 Hafıza paketi eklendi
+import 'package:shared_preferences/shared_preferences.dart';
 import '../dashboard/dashboard_screen.dart';
 
 class MoodScreen extends StatefulWidget {
@@ -34,14 +34,14 @@ class _MoodScreenState extends State<MoodScreen> {
       "Günün şahane başladıysa, bitişi efsane olacaktır! Başlayalım!",
       "İçindeki bu pozitif güç bugün harika projeler üretecek!",
       "Modun zirvedeyken en zorlu görevleri aradan çıkarmanın tam sırası!",
-      "Harika bir gün, harika kararlarla taçlanır. Adım at!",
+      "Harika bir day, harika kararlarla taçlanır. Adım at!",
       "Bugün senin günün! Potansiyelini sonuna kadar yansıt!",
       "Bu harika enerjinle bugün harikalar yaratacaksın, inanıyorum!",
     ],
     "İyiyim.": [
       "Harika bir denge! Dingin ve odaklanmış bir gün seni bekliyor. 🎯",
       "İyi olmak, harika işler başarmak için en güvenli zeminidir.",
-      "Net bir zihin ve istikrarlı bir energy bugün seni başarıya taşır.",
+      "Net bir zihin ve istikrarlı bir enerji bugün seni başarıya taşır.",
       "Güzel bir gün geçirmek için ihtiyacın olan her şey zaten içinde mevcut.",
       "Adım adım, sakin ve kararlı bir şekilde bugünün planlarını tamamlayabilirsin.",
       "İçindeki sakin güç, en karmaşık kodları bile çözmene yeter!",
@@ -108,10 +108,9 @@ class _MoodScreenState extends State<MoodScreen> {
     });
   }
 
-  // 🌟 Kullanıcı uygulamaya geçerken bugünün tarihini mühürleyen fonksiyon
   Future<void> _saveMoodSelectionDate() async {
     final prefs = await SharedPreferences.getInstance();
-    final String todayStr = DateTime.now().toString().split(' ')[0]; // YYYY-MM-DD formatı
+    final String todayStr = DateTime.now().toString().split(' ')[0];
     await prefs.setString('last_mood_date', todayStr);
   }
 
@@ -121,11 +120,14 @@ class _MoodScreenState extends State<MoodScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF1A2344), Color(0xFF0D111E)],
+            // 🌟 DÜZELTİLDİ: Arka plan artık temaya göre renk değiştiriyor!
+            colors: widget.isDarkMode
+                ? [const Color(0xFF1A2344), const Color(0xFF0D111E)]
+                : [Colors.blueGrey.shade50, Colors.white],
           ),
         ),
         child: SafeArea(
@@ -153,7 +155,7 @@ class _MoodScreenState extends State<MoodScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05), // withOpacity düzeltildi
+                color: widget.isDarkMode ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -163,13 +165,13 @@ class _MoodScreenState extends State<MoodScreen> {
               ),
             ),
             const SizedBox(height: 32),
-            const Text(
+            Text(
               "Hoş Geldiniz",
               style: TextStyle(
                 fontFamily: 'Serif',
                 fontSize: 44,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: widget.isDarkMode ? Colors.white : const Color(0xFF1A2344),
                 letterSpacing: 1.2,
               ),
             ),
@@ -196,12 +198,12 @@ class _MoodScreenState extends State<MoodScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               "Bugün kendini\nnasıl hissediyorsun?",
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: widget.isDarkMode ? Colors.white : const Color(0xFF1A2344),
                 height: 1.3,
               ),
               textAlign: TextAlign.center,
@@ -235,13 +237,13 @@ class _MoodScreenState extends State<MoodScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.1), // withOpacity düzeltildi
+                color: widget.isDarkMode ? Colors.white.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 title,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: widget.isDarkMode ? Colors.white : const Color(0xFF1A2344),
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),
@@ -272,14 +274,14 @@ class _MoodScreenState extends State<MoodScreen> {
           Icon(
             Icons.format_quote_rounded,
             size: 48,
-            color: Colors.white.withValues(alpha: 0.3), // withOpacity düzeltildi
+            color: widget.isDarkMode ? Colors.white.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.2),
           ),
           const SizedBox(height: 16),
           Text(
             _selectedQuote,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
-              color: Colors.white,
+              color: widget.isDarkMode ? Colors.white : const Color(0xFF1A2344),
               height: 1.5,
               fontStyle: FontStyle.italic,
             ),
@@ -288,10 +290,8 @@ class _MoodScreenState extends State<MoodScreen> {
           const SizedBox(height: 48),
           ElevatedButton.icon(
             onPressed: () async {
-              // 🌟 Önce bugünün tarihini hafızaya mühürlüyoruz
               await _saveMoodSelectionDate();
 
-              // Sonra Dashboard ekranına geçiş yapıyoruz
               if (mounted) {
                 Navigator.pushReplacement(
                   context,

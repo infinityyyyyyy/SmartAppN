@@ -3,9 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'core/utils/notification_service.dart';
-import 'screens/login/login_screen.dart'; // Bu ekranı bir sonraki adımda oluşturacağız
-
-// lib/main.dart içindeki main fonksiyonunu bu şekilde değiştirin:
+import 'screens/login/login_screen.dart';
 
 void main() async {
   // Binding işlemlerini garantiye alıyoruz
@@ -37,7 +35,7 @@ class SmartTaskApp extends StatefulWidget {
 }
 
 class _SmartTaskAppState extends State<SmartTaskApp> {
-  bool _isDarkMode = true; // Global tema yönetimi
+  bool _isDarkMode = true; // Global tema yönetimi (Default olarak Dark)
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +71,13 @@ class _SmartTaskAppState extends State<SmartTaskApp> {
       // Uygulama ilk açıldığında doğrudan LoginScreen'i tetikliyoruz
       home: LoginScreen(
         isDarkMode: _isDarkMode,
-        onThemeChanged: (value) => setState(() => _isDarkMode = value),
+        // 🌟 Buradaki fonksiyon sayesinde Login veya Dashboard'dan gelen tema
+        // değişim istekleri tüm uygulamayı (MaterialApp) anında günceller.
+        onThemeChanged: (value) {
+          setState(() {
+            _isDarkMode = value;
+          });
+        },
       ),
     );
   }
